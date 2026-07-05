@@ -1,0 +1,35 @@
+Retrieval-Augmented Generation (RAG): An Overview
+
+What is RAG?
+Retrieval-Augmented Generation is a technique that combines information retrieval
+with text generation. Instead of relying only on a language model's internal
+knowledge, a RAG system first retrieves relevant passages from a collection of
+documents and then generates an answer grounded in that retrieved information.
+This improves factual accuracy and allows question answering over private or
+domain-specific data that the model was never trained on.
+
+The Three Stages.
+First, retrieval finds the most relevant chunks of text from a document, typically
+using embeddings and vector similarity search. Second, augmentation adds the
+retrieved content to the model's input to provide context for answering. Third,
+generation uses a language model to produce the final answer from the retrieved
+context, ensuring the response is grounded in actual data.
+
+Why Chunking Matters.
+Documents are split into smaller chunks before they are embedded. Smaller, coherent
+chunks improve retrieval accuracy because each embedding represents a focused idea.
+Overlapping chunks preserve context that would otherwise be lost at the boundary
+between two chunks. Choosing a good chunk size is a balance: chunks that are too
+large dilute relevance, while chunks that are too small lose surrounding context.
+
+The Role of Reranking.
+Vector similarity search is fast but only approximate. A reranking model re-scores
+the top candidate chunks against the exact question, reordering them by true
+relevance. Feeding only the best few chunks to the language model produces more
+accurate and concise answers.
+
+Common Applications.
+RAG systems are widely used in chatbots, knowledge assistants, enterprise search
+systems, and AI-powered documentation tools. Anywhere a model must answer questions
+about specific, up-to-date, or private information, retrieval augmentation is the
+standard approach.
