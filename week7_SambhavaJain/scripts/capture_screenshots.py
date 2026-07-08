@@ -2,7 +2,7 @@
 import os
 from playwright.sync_api import sync_playwright
 
-URL = "http://localhost:8607"
+URL = "http://localhost:8608"
 OUT = os.path.join(os.path.dirname(__file__), "..", "docs", "screenshots")
 os.makedirs(OUT, exist_ok=True)
 SAMPLE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "sample_docs", "rag_overview.txt"))

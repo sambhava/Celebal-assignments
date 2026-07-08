@@ -50,9 +50,22 @@ section[data-testid="stSidebar"] {{background: {p['surface']}; border-right: 1px
 
 /* typography */
 html, body, [class*="css"] {{font-family: "Segoe UI", "Google Sans", system-ui, sans-serif;}}
-h1, h2, h3 {{letter-spacing: -0.01em; color: {p['text']};}}
-.stApp, .stApp p, .stApp li, .stMarkdown, [data-testid="stChatMessageContent"] {{color: {p['text']};}}
-[data-testid="stCaptionContainer"], .stApp small {{color: {p['muted']} !important;}}
+
+/* base text colour — broad so nothing keeps Streamlit's default dark text */
+.stApp, .stApp p, .stApp li, .stApp span, .stApp label, .stApp div,
+.stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5,
+.stMarkdown, [data-testid="stMarkdownContainer"],
+[data-testid="stHeadingWithActionElements"],
+[data-testid="stExpander"] summary, [data-testid="stExpander"] summary *,
+[data-testid="stChatMessageContent"], [data-testid="stChatMessageContent"] * {{
+  color: {p['text']};
+}}
+h1, h2, h3 {{letter-spacing: -0.01em;}}
+
+/* accent + muted colours must win over the broad rule above */
+.eyebrow {{color: {p['accent']} !important;}}
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *,
+.stApp small, .brand .tag {{color: {p['muted']} !important;}}
 
 /* brand mark */
 .brand {{display:flex; align-items:center; gap:.55rem; margin:.1rem 0 1.2rem;}}
