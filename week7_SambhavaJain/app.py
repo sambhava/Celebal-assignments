@@ -23,53 +23,93 @@ st.set_page_config(page_title="DocMind — Document Q&A", page_icon="📓", layo
 
 # --- styling -----------------------------------------------------------------
 
-CSS = """
+# Two palettes, swapped at runtime by the theme toggle. Everything downstream
+# reads from these so light/dark stay in sync from one place.
+LIGHT = {
+    "bg": "#F7F8FA", "surface": "#FFFFFF", "border": "#E8EAED",
+    "text": "#1F2733", "muted": "#6B7280", "accent": "#4B6FDB",
+    "chip_bg": "#F4F6FB", "chip_border": "#E4E8F2",
+}
+DARK = {
+    "bg": "#0F1419", "surface": "#171C24", "border": "#2A313C",
+    "text": "#E6E9EE", "muted": "#9AA4B2", "accent": "#7C97F7",
+    "chip_bg": "#1F2630", "chip_border": "#2A313C",
+}
+
+
+def build_css(dark: bool) -> str:
+    p = DARK if dark else LIGHT
+    return f"""
 <style>
 /* hide default Streamlit chrome */
-#MainMenu, footer, header[data-testid="stHeader"] {visibility: hidden;}
+#MainMenu, footer, header[data-testid="stHeader"] {{visibility: hidden;}}
 
-/* calm, paper-like canvas */
-.stApp {background: #F7F8FA;}
-section[data-testid="stSidebar"] {background: #FFFFFF; border-right: 1px solid #E8EAED;}
+/* canvas + rails */
+.stApp {{background: {p['bg']};}}
+section[data-testid="stSidebar"] {{background: {p['surface']}; border-right: 1px solid {p['border']};}}
 
 /* typography */
-html, body, [class*="css"] {font-family: "Segoe UI", "Google Sans", system-ui, sans-serif;}
-h1, h2, h3 {letter-spacing: -0.01em; color: #1F2733;}
+html, body, [class*="css"] {{font-family: "Segoe UI", "Google Sans", system-ui, sans-serif;}}
+h1, h2, h3 {{letter-spacing: -0.01em; color: {p['text']};}}
+.stApp, .stApp p, .stApp li, .stMarkdown, [data-testid="stChatMessageContent"] {{color: {p['text']};}}
+[data-testid="stCaptionContainer"], .stApp small {{color: {p['muted']} !important;}}
 
 /* brand mark */
-.brand {display:flex; align-items:center; gap:.55rem; margin:.2rem 0 1.4rem;}
-.brand .logo {font-size:1.6rem;}
-.brand .name {font-size:1.35rem; font-weight:700; color:#1F2733;}
-.brand .tag {font-size:.8rem; color:#6B7280; margin-top:-2px;}
+.brand {{display:flex; align-items:center; gap:.55rem; margin:.1rem 0 1.2rem;}}
+.brand .logo {{font-size:1.6rem;}}
+.brand .name {{font-size:1.35rem; font-weight:700; color:{p['text']};}}
+.brand .tag {{font-size:.8rem; color:{p['muted']}; margin-top:-2px;}}
 
 /* overview card — the signature element (styled bordered container) */
-div[data-testid="stVerticalBlockBorderWrapper"]:has(.eyebrow) {
-  background:#FFFFFF; border:1px solid #E8EAED !important; border-left:4px solid #4B6FDB !important;
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.eyebrow) {{
+  background:{p['surface']}; border:1px solid {p['border']} !important; border-left:4px solid {p['accent']} !important;
   border-radius:16px !important; box-shadow:0 1px 3px rgba(16,24,40,.05);
-}
-.eyebrow {
+}}
+.eyebrow {{
   display:inline-flex; align-items:center; gap:.4rem; font-size:.72rem;
-  font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#4B6FDB;
-}
+  font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:{p['accent']};
+}}
 
 /* source chips in the sidebar */
-.source-item {
+.source-item {{
   display:flex; align-items:center; gap:.5rem; padding:.5rem .7rem; margin-bottom:.4rem;
-  background:#F4F6FB; border:1px solid #E4E8F2; border-radius:10px; font-size:.88rem; color:#374151;
-}
+  background:{p['chip_bg']}; border:1px solid {p['chip_border']}; border-radius:10px;
+  font-size:.88rem; color:{p['text']};
+}}
 
 /* empty state */
-.empty {
-  text-align:center; color:#6B7280; padding:3.5rem 1rem;
-  border:1px dashed #D6DAE1; border-radius:16px; background:#FFFFFFAA;
-}
-.empty .big {font-size:2.4rem; margin-bottom:.4rem;}
+.empty {{
+  text-align:center; color:{p['muted']}; padding:3.5rem 1rem;
+  border:1px dashed {p['border']}; border-radius:16px; background:{p['surface']}55;
+}}
+.empty .big {{font-size:2.4rem; margin-bottom:.4rem;}}
+.empty b {{color:{p['text']};}}
 
-/* source citations under answers */
-.cite {font-size:.82rem; color:#4B5563;}
+/* chat surfaces */
+[data-testid="stChatMessage"] {{background:{p['surface']}; border:1px solid {p['border']}; border-radius:14px;}}
+div[data-testid="stExpander"] details {{background:{p['surface']}; border:1px solid {p['border']}; border-radius:12px;}}
+[data-testid="stBottom"], [data-testid="stBottomBlockContainer"] {{background:{p['bg']};}}
+div[data-testid="stChatInput"] {{background:{p['surface']}; border:1px solid {p['border']}; border-radius:14px;}}
+div[data-testid="stChatInput"] textarea {{color:{p['text']};}}
+
+/* file uploader dropzone */
+[data-testid="stFileUploaderDropzone"] {{
+  background:{p['chip_bg']}; border:1px dashed {p['chip_border']}; color:{p['text']};
+}}
+[data-testid="stFileUploaderDropzone"] * {{color:{p['muted']} !important;}}
+
+/* minimalist theme toggle button */
+.st-key-theme_toggle button {{
+  background:transparent !important; border:1px solid {p['border']} !important;
+  color:{p['text']} !important; border-radius:999px !important;
+  width:38px; height:38px; padding:0 !important; font-size:1.05rem; line-height:1;
+  box-shadow:none !important; transition:background .15s ease, border-color .15s ease;
+}}
+.st-key-theme_toggle button:hover {{
+  background:{p['chip_bg']} !important; border-color:{p['accent']} !important;
+}}
 </style>
 """
-st.markdown(CSS, unsafe_allow_html=True)
 
 
 # --- helpers -----------------------------------------------------------------
@@ -124,6 +164,10 @@ def main() -> None:
     st.session_state.setdefault("messages", [])
     st.session_state.setdefault("summary", "")
     st.session_state.setdefault("loaded_sources", [])
+    st.session_state.setdefault("dark", False)
+
+    # apply the active theme
+    st.markdown(build_css(st.session_state.dark), unsafe_allow_html=True)
 
     cfg = get_config()
     if not st.session_state.keys_ok:
@@ -131,12 +175,21 @@ def main() -> None:
 
     # ---- sidebar: sources rail ----
     with st.sidebar:
-        st.markdown(
-            '<div class="brand"><span class="logo">📓</span>'
-            '<div><div class="name">DocMind</div>'
-            '<div class="tag">Chat with your documents</div></div></div>',
-            unsafe_allow_html=True,
-        )
+        top_l, top_r = st.columns([4, 1])
+        with top_l:
+            st.markdown(
+                '<div class="brand"><span class="logo">📓</span>'
+                '<div><div class="name">DocMind</div>'
+                '<div class="tag">Chat with your documents</div></div></div>',
+                unsafe_allow_html=True,
+            )
+        with top_r:
+            icon = "☀️" if st.session_state.dark else "🌙"
+            help_txt = "Switch to light mode" if st.session_state.dark else "Switch to dark mode"
+            if st.button(icon, key="theme_toggle", help=help_txt):
+                st.session_state.dark = not st.session_state.dark
+                st.rerun()
+
         st.subheader("Sources")
         files = st.file_uploader(
             "Add PDFs or text files",

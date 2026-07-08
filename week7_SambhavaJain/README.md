@@ -18,6 +18,7 @@ This implements the extras from the assignment's *"Improvements & Experiments"* 
 |---|---|
 | **Auto-summary on upload** | Adding a document instantly generates a grounded overview (summary + key topics) before you ask anything. |
 | **Chat-style follow-ups** | A conversational interface for asking follow-up questions, like NotebookLM. |
+| **Light / dark mode** | A minimalist one-tap toggle in the sidebar switches the whole app between light and dark themes. |
 | **Recursive, overlapping chunking** | Splits on paragraph → sentence → word boundaries so chunks stay coherent, with overlap so context isn't lost at the seams. |
 | **Two-stage retrieval + rerank** | Pulls `top_k` candidates by vector similarity, then reorders them with Cohere Rerank so only the *most relevant* chunks reach the model. |
 | **Grounded answers with citations** | Answers are generated from retrieved documents and cite their sources; every answer lists the passages used, with page numbers and relevance scores. |
@@ -127,6 +128,10 @@ Then, in the browser (http://localhost:8501):
 **3. Ask follow-up questions in a chat, with sources for every answer**
 
 ![Follow-up chat](docs/screenshots/03_chat.png)
+
+**4. One-tap dark mode**
+
+![Dark mode](docs/screenshots/04_dark_mode.png)
 
 *(Captured from a real run against Cohere + Pinecone — see
 `scripts/capture_screenshots.py`.)*

@@ -2,7 +2,7 @@
 import os
 from playwright.sync_api import sync_playwright
 
-URL = "http://localhost:8604"
+URL = "http://localhost:8607"
 OUT = os.path.join(os.path.dirname(__file__), "..", "docs", "screenshots")
 os.makedirs(OUT, exist_ok=True)
 SAMPLE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "sample_docs", "rag_overview.txt"))
@@ -39,6 +39,11 @@ with sync_playwright() as pw:
     page.wait_for_selector("text=passages)", timeout=180000)
     page.wait_for_timeout(2500)
     shot(page, "03_chat.png")
+
+    # toggle dark mode and capture the same populated view
+    page.get_by_role("button", name="🌙").click()
+    page.wait_for_timeout(1800)
+    shot(page, "04_dark_mode.png")
 
     browser.close()
 print("DONE")
