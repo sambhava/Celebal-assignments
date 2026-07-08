@@ -1,11 +1,12 @@
-# 📄 Document Question Answering System (RAG)
+# 📓 DocMind — Document Question Answering (RAG)
 
-A Retrieval-Augmented Generation (RAG) system that answers questions about your
-own documents. Upload PDFs or text files, ask a question, and get an answer that
-is **grounded in the document** and shows **exactly which passages it came from**.
+A NotebookLM-style Retrieval-Augmented Generation (RAG) app. Add a document and
+DocMind **reads it, writes an overview automatically**, then lets you **chat with
+follow-up questions** — every answer is **grounded in the document** and shows
+**exactly which passages it came from**.
 
 Built with **Cohere** (embeddings, reranking, grounded chat) and **Pinecone**
-(serverless vector database), wrapped in a **Streamlit** web app.
+(serverless vector database), wrapped in a clean **Streamlit** web app.
 
 ---
 
@@ -15,12 +16,13 @@ This implements the extras from the assignment's *"Improvements & Experiments"* 
 
 | Feature | What it does |
 |---|---|
+| **Auto-summary on upload** | Adding a document instantly generates a grounded overview (summary + key topics) before you ask anything. |
+| **Chat-style follow-ups** | A conversational interface for asking follow-up questions, like NotebookLM. |
 | **Recursive, overlapping chunking** | Splits on paragraph → sentence → word boundaries so chunks stay coherent, with overlap so context isn't lost at the seams. |
 | **Two-stage retrieval + rerank** | Pulls `top_k` candidates by vector similarity, then reorders them with Cohere Rerank so only the *most relevant* chunks reach the model. |
-| **Grounded answers with citations** | Answers are generated from retrieved documents and cite their sources; the UI lists every chunk used, with page numbers and relevance scores. |
-| **Multi-document support** | Upload several files at once; each chunk keeps its source filename and page. |
-| **Correct query/document embeddings** | Uses Cohere's `search_document` vs `search_query` input types for measurably better retrieval. |
-| **Fully configurable** | Chunk size, overlap, `top_k`, and rerank count are adjustable from the sidebar. |
+| **Grounded answers with citations** | Answers are generated from retrieved documents and cite their sources; every answer lists the passages used, with page numbers and relevance scores. |
+| **Multi-document support** | Add several files at once; each chunk keeps its source filename and page. |
+| **Keys stay hidden** | API keys are read silently from `.env`; the app only asks if a key is missing. |
 
 ---
 
@@ -55,7 +57,7 @@ rag-document-qa/
 │   ├── embeddings.py      # Cohere embed wrapper (batched)
 │   ├── vectorstore.py     # Pinecone create / upsert / query
 │   ├── retriever.py       # vector search + Cohere rerank
-│   ├── generator.py       # grounded Cohere Chat answer + citations
+│   ├── generator.py       # grounded Cohere Chat answer + citations + summary
 │   └── pipeline.py        # orchestrates ingest() and ask()
 ├── tests/                 # offline unit + pipeline tests (mocked SDKs)
 ├── sample_docs/           # a document you can try immediately
@@ -105,28 +107,28 @@ streamlit run app.py
 
 Then, in the browser (http://localhost:8501):
 
-1. Upload one or more PDFs / text files (try `sample_docs/rag_overview.txt`).
-2. Click **Process documents**.
-3. Ask a question, e.g. *"What is the main idea of the document?"*
-4. Read the answer and expand **Sources** to see the exact chunks it used.
+1. In the left **Sources** panel, add one or more PDFs / text files (try `sample_docs/rag_overview.txt`).
+2. Click **＋ Add & summarize** — DocMind indexes the document and writes an **Overview** automatically.
+3. Ask a **follow-up** in the chat box, e.g. *"What does reranking do?"*
+4. Expand **Sources** under any answer to see the exact passages it used.
 
 ---
 
 ## Screenshots
 
-**1. Upload your documents**
+**1. Add a source to begin**
 
-![Home screen](docs/screenshots/01_home.png)
+![Empty state](docs/screenshots/01_empty_state.png)
 
-**2. Documents chunked, embedded, and indexed**
+**2. An overview is generated automatically when you add a document**
 
-![Indexed](docs/screenshots/02_indexed.png)
+![Auto overview](docs/screenshots/02_overview.png)
 
-**3. Grounded answer with the source chunks it used**
+**3. Ask follow-up questions in a chat, with sources for every answer**
 
-![Answer with sources](docs/screenshots/04_sources.png)
+![Follow-up chat](docs/screenshots/03_chat.png)
 
-*(These are captured from a real run against Cohere + Pinecone — see
+*(Captured from a real run against Cohere + Pinecone — see
 `scripts/capture_screenshots.py`.)*
 
 ---

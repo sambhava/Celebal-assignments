@@ -17,6 +17,14 @@ SYSTEM_PREAMBLE = (
     "accurate, and cite the sources you used."
 )
 
+SUMMARY_PROMPT = (
+    "Write a clear overview of the provided document(s) for someone who has "
+    "not read them. Structure your response as:\n"
+    "1. A 2-3 sentence summary of what the document is about.\n"
+    "2. A short bulleted list of the main topics or key points.\n"
+    "Base everything strictly on the provided documents."
+)
+
 
 @dataclass
 class Answer:
@@ -64,6 +72,28 @@ class Generator:
             sources=chunks,
             citations=self._extract_citations(resp),
         )
+
+    def summarize(self, chunks: list[dict]) -> str:
+        """Produce a grounded overview of the given document chunks."""
+        if not chunks:
+            return "No document content was found to summarize."
+
+        documents = [
+            {
+                "id": f"doc_{i}",
+                "data": {"text": c["text"], "source": str(c.get("source", "unknown"))},
+            }
+            for i, c in enumerate(chunks)
+        ]
+        resp = self._client.chat(
+            model=self._model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PREAMBLE},
+                {"role": "user", "content": SUMMARY_PROMPT},
+            ],
+            documents=documents,
+        )
+        return self._extract_text(resp)
 
     # --- response parsing (defensive: the SDK shape varies by version) -------
 

@@ -29,6 +29,8 @@ class RAGPipeline:
     def __init__(self, cfg: Config, cohere_client=None, pinecone_client=None):
         cfg.validate()
         self.cfg = cfg
+        self._ingested: list[dict] = []
+        self.sources: list[str] = []
 
         if cohere_client is None or pinecone_client is None:
             cohere_client, pinecone_client = _build_clients(cfg)
@@ -73,7 +75,24 @@ class RAGPipeline:
 
         embeddings = self._embedder.embed_documents([c.text for c in all_chunks])
         self._store.upsert(all_chunks, embeddings)
-        return {"files": len(files), "chunks": len(all_chunks)}
+
+        # keep a lightweight record of what was ingested, for summaries + UI
+        self._ingested = [c.metadata for c in all_chunks]
+        self.sources = sorted({c.source for c in all_chunks})
+        return {
+            "files": len(files),
+            "chunks": len(all_chunks),
+            "sources": self.sources,
+        }
+
+    # --- summarizing ---------------------------------------------------------
+
+    def summarize(self, max_chunks: int = 15) -> str:
+        """Generate a grounded overview of the ingested document(s)."""
+        chunks = getattr(self, "_ingested", [])
+        if not chunks:
+            return "No document content was found to summarize."
+        return self._generator.summarize(chunks[:max_chunks])
 
     # --- querying ------------------------------------------------------------
 

@@ -114,3 +114,16 @@ def test_ask_with_no_matches_is_graceful():
     answer = p.ask("anything?")
     assert "could not find" in answer.text.lower()
     assert answer.sources == []
+
+
+def test_summarize_uses_ingested_chunks():
+    p = _pipeline()
+    summary_info = p.ingest([(b"The sky is blue. Grass is green.", "facts.txt")])
+    assert "facts.txt" in summary_info["sources"]
+    summary = p.summarize()
+    assert summary == "Grounded answer."  # FakeCohere returns this for any chat
+
+
+def test_summarize_without_documents_is_graceful():
+    p = _pipeline()
+    assert "No document content" in p.summarize()
