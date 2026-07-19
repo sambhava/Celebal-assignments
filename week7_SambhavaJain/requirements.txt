@@ -1,0 +1,9 @@
+# Core RAG stack
+cohere>=5.13             # embeddings, chat (grounded generation), and rerank
+pinecone>=5.0            # serverless vector database
+pypdf>=5.0               # PDF text extraction
+streamlit>=1.40          # web UI
+python-dotenv>=1.0       # load API keys from a local .env file
+
+# Testing (dev only)
+pytest>=8.0
