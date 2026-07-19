@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autonomous-data-science-copilot"
+version = "0.1.0"
+description = "An agentic data-science co-pilot that answers plain-English questions over uploaded files by generating and executing pandas code in a hardened sandbox, with a bounded self-healing loop."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+# Core runtime deps for the deterministic backbone that is actually implemented
+# and tested today (ingest -> profile -> intent -> plan -> loop -> report).
+# Pinned to the versions the test suite and the R11/R12 security findings were
+# verified against — see the version note in README.
+dependencies = [
+    "pandas==3.0.2",
+    "openpyxl==3.1.5",
+    "httpx>=0.27",           # local-LLM calls (Ollama/vLLM) — code_gen is live
+]
+
+[project.scripts]
+# The "front door": after `pip install -e .` you can run `copilot analyze ...`.
+copilot = "copilot.cli:main"
+
+[project.optional-dependencies]
+# Charting inside the sandbox (Agg backend). Needed for any step that produces a
+# plot; code_gen emits save_artifact() calls that import matplotlib on demand.
+viz = [
+    "matplotlib>=3.6",
+]
+
+# RAG-over-pandas-docs error recovery. NOT yet wired (rag_recovery is a stub).
+rag = [
+    "faiss-cpu>=1.8",
+    "sentence-transformers>=3.0",
+]
+
+# Graph orchestration. The graph currently runs via a plain deterministic driver
+# (copilot/graph/loop.py); LangGraph is the intended production orchestrator.
+graph = [
+    "langgraph>=0.2",
+]
+
+# UI.
+ui = [
+    "streamlit>=1.38",
+]
+
+# Everything, for a full dev environment.
+dev = [
+    "pytest>=8.0",
+    "autonomous-data-science-copilot[viz,rag,graph,ui]",
+]
+
+[tool.setuptools.packages.find]
+include = ["copilot*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

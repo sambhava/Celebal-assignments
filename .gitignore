@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# venv
+.venv/
+venv/
+env/
+
+# local models / indexes (never commit weights or built indexes)
+*.gguf
+*.safetensors
+models/
+.rag_index/
+faiss_index/
+
+# uploads / scratch / artifacts produced at runtime
+uploads/
+scratch/
+artifacts/
+*.png
+!docs/**/*.png
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

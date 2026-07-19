@@ -1,0 +1,13 @@
+# Core runtime — the backbone that is implemented and tested today (160 tests).
+# Pinned to the versions the suite (and the R11/R12 security findings) were
+# verified against on Python 3.11.
+#
+# code_gen calls a local model over HTTP (httpx) — install Ollama separately and
+# `ollama pull qwen2.5-coder:3b`. For charts and the optional RAG docs index,
+# install the extras:
+#     pip install -e ".[viz]"     # matplotlib, for charting steps
+#     pip install -e ".[rag]"     # RAG error recovery (FAISS docs index)
+#     pip install -e ".[dev]"     # everything, for development
+pandas==3.0.2
+openpyxl==3.1.5
+httpx>=0.27
